@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iciclecreek.SemanticKernel.Connectors.FileMemory", "Iciclecreek.SemanticKernel.Connectors.FileMemory\Iciclecreek.SemanticKernel.Connectors.FileMemory.csproj", "{C1510AF5-0C79-4AC9-9E96-4A0C3370C66A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileMemory.Tests", "Iciclecreek.SemanticKernel.Connectors.FileMemory.Tests\FileMemory.Tests.csproj", "{310C79B7-0A11-40B6-828C-E7D9C2438930}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileMemory.ConformanceTests", "Iciclecreek.SemanticKernel.Connectors.FileMemory.ConformanceTests\FileMemory.ConformanceTests.csproj", "{631E0575-0542-452A-F5C9-27AF48CDA7BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VectorData.ConformanceTests", "..\..\semantic-kernel\dotnet\test\VectorData\VectorData.ConformanceTests\VectorData.ConformanceTests.csproj", "{EC4F8412-080D-07F9-9617-8928F58ED171}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C1510AF5-0C79-4AC9-9E96-4A0C3370C66A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1510AF5-0C79-4AC9-9E96-4A0C3370C66A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1510AF5-0C79-4AC9-9E96-4A0C3370C66A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1510AF5-0C79-4AC9-9E96-4A0C3370C66A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{310C79B7-0A11-40B6-828C-E7D9C2438930}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{310C79B7-0A11-40B6-828C-E7D9C2438930}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{310C79B7-0A11-40B6-828C-E7D9C2438930}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{310C79B7-0A11-40B6-828C-E7D9C2438930}.Release|Any CPU.Build.0 = Release|Any CPU
+		{631E0575-0542-452A-F5C9-27AF48CDA7BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{631E0575-0542-452A-F5C9-27AF48CDA7BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{631E0575-0542-452A-F5C9-27AF48CDA7BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{631E0575-0542-452A-F5C9-27AF48CDA7BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC4F8412-080D-07F9-9617-8928F58ED171}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC4F8412-080D-07F9-9617-8928F58ED171}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC4F8412-080D-07F9-9617-8928F58ED171}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC4F8412-080D-07F9-9617-8928F58ED171}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4E22C1EC-1F22-4575-AA63-7D8A6D8BCAB9}
+	EndGlobalSection
+EndGlobal
