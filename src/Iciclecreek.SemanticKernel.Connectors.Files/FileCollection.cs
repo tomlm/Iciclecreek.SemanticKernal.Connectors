@@ -31,7 +31,7 @@ namespace Iciclecreek.SemanticKernel.Connectors.Files
             _options = options;
             _name = collectionName;
             _collectionPath = Path.Combine(options.Path, collectionName);
-            _metaFilePath = Path.Combine(_collectionPath, "collection.json");
+            _metaFilePath = Path.Combine(options.Path, $"{collectionName}.json");
             Directory.CreateDirectory(_collectionPath);
             _keyTypeName = typeof(TKey).Name;
             _recordTypeName = typeof(TRecord).Name;
@@ -58,56 +58,58 @@ namespace Iciclecreek.SemanticKernel.Connectors.Files
             else
             {
                 // Write meta file
-                var meta = new CollectionMeta { KeyType = _keyTypeName, RecordType = _recordTypeName };
-                File.WriteAllText(_metaFilePath, JsonSerializer.Serialize(meta));
+                if (!File.Exists(_metaFilePath))
+                {
+                    var meta = new CollectionMeta { KeyType = _keyTypeName, RecordType = _recordTypeName };
+                    File.WriteAllText(_metaFilePath, JsonSerializer.Serialize(meta));
+                }
             }
+
+            Directory.CreateDirectory(_collectionPath);
+            // Load all records from file system into memory
+            var files = Directory.EnumerateFiles(_collectionPath, "*.json").ToList();
 
             _loadingTask = Task.Run(async () =>
             {
                 await _inMemoryCollection.EnsureCollectionExistsAsync();
-
-                // Load all records from file system into memory
-                foreach (var file in Directory.EnumerateFiles(_collectionPath, "*.json"))
-                {
-                    if (Path.GetFileName(file) == "collection.json") continue;
-                    try
-                    {
-
-                        var json = await File.ReadAllTextAsync(file);
-                        var record = JsonSerializer.Deserialize<TRecord>(json);
-                        if (record != null)
-                        {
-                            var key = (TKey)Convert.ChangeType(_keyProperty.GetValue(record), typeof(TKey));
-                            await _inMemoryCollection.UpsertAsync(record);
-                        }
-                    }
-                    catch (FileNotFoundException err)
-                    {
-                        // Log or handle the error as needed
-                        System.Diagnostics.Debug.WriteLine($"Error loading record from file {file}: {err.Message}");
-                    }
-                }
+                await _inMemoryCollection.UpsertAsync(files.Select(file => JsonSerializer.Deserialize<TRecord>(File.ReadAllText(file))));
             });
         }
 
         public override string Name => _name;
 
-        public override Task EnsureCollectionExistsAsync(CancellationToken cancellationToken = default)
+        public override async Task EnsureCollectionExistsAsync(CancellationToken cancellationToken = default)
         {
-            Directory.CreateDirectory(_collectionPath);
-            return _inMemoryCollection.EnsureCollectionExistsAsync(cancellationToken);
+            await _loadingTask;
+
+            // Write meta file
+            if (!File.Exists(_metaFilePath))
+            {
+                var meta = new CollectionMeta { KeyType = _keyTypeName, RecordType = _recordTypeName };
+                File.WriteAllText(_metaFilePath, JsonSerializer.Serialize(meta));
+            }
+
+            if (!Directory.Exists(_collectionPath))
+            {
+                Directory.CreateDirectory(_collectionPath);
+            }
+
+            await _inMemoryCollection.EnsureCollectionExistsAsync(cancellationToken);
         }
 
-        public override Task EnsureCollectionDeletedAsync(CancellationToken cancellationToken = default)
+        public override async Task EnsureCollectionDeletedAsync(CancellationToken cancellationToken = default)
         {
-            if (Directory.Exists(_collectionPath))
-                Directory.Delete(_collectionPath, true);
-            return _inMemoryCollection.EnsureCollectionDeletedAsync(cancellationToken);
+            await _loadingTask;
+
+            Directory.Delete(_collectionPath, true);
+            File.Delete(_metaFilePath);
+
+            await _inMemoryCollection.EnsureCollectionDeletedAsync(cancellationToken);
         }
 
         public override Task<bool> CollectionExistsAsync(CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(Directory.Exists(_collectionPath));
+            return Task.FromResult(File.Exists(_metaFilePath));
         }
 
         public override async Task UpsertAsync(TRecord record, CancellationToken cancellationToken = default)
@@ -115,6 +117,7 @@ namespace Iciclecreek.SemanticKernel.Connectors.Files
             await _loadingTask;
 
             await _inMemoryCollection.UpsertAsync(record, cancellationToken);
+
             var key = _keyProperty.GetValue(record)?.ToString();
             if (string.IsNullOrEmpty(key)) throw new ArgumentException($"Record key property '{_keyProperty.Name}' cannot be null or empty");
             string filePath = Path.Combine(_collectionPath, key + ".json");
@@ -126,7 +129,7 @@ namespace Iciclecreek.SemanticKernel.Connectors.Files
         {
             if (records == null)
                 throw new ArgumentNullException(nameof(records));
-            
+
             foreach (var record in records)
                 await UpsertAsync(record, cancellationToken);
         }

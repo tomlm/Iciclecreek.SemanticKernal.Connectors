@@ -1,6 +1,6 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
-using Iciclecreek.SemanticKernel.Connectors.FileMemory;
+using Iciclecreek.SemanticKernel.Connectors.Files;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
 using OpenAI.Embeddings;

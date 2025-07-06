@@ -7,6 +7,7 @@ using Microsoft.Extensions.VectorData;
 using VectorData.ConformanceTests;
 using VectorData.ConformanceTests.Support;
 using Xunit;
+using Iciclecreek.SemanticKernel.Connectors.Files;
 
 namespace FileMemory.ConformanceTests;
 
@@ -40,14 +41,16 @@ public class FileMemoryEmbeddingGenerationTests(FileMemoryEmbeddingGenerationTes
         [
             // The FileMemory DI methods register a new vector store instance, which doesn't share the collection seeded by the
             // fixture and the test fails.
-            //services => services.AddFileMemoryVectorStore()
+            services => services.AddFileVectorStore()
         ];
 
         public override Func<IServiceCollection, IServiceCollection>[] DependencyInjectionCollectionRegistrationDelegates =>
         [
             // The FileMemory DI methods register a new vector store instance, which doesn't share the collection seeded by the
             // fixture and the test fails.
-            // services => services.AddFileMemoryVectorStoreRecordCollection<int, RecordWithAttributes>(this.CollectionName)
+            services => services
+                .AddFileVectorStore()
+                .AddFileVectorStoreRecordCollection<int, RecordWithAttributes>(this.CollectionName)
         ];
     }
 
@@ -63,14 +66,14 @@ public class FileMemoryEmbeddingGenerationTests(FileMemoryEmbeddingGenerationTes
         [
             // The FileMemory DI methods register a new vector store instance, which doesn't share the collection seeded by the
             // fixture and the test fails.
-            // services => services.AddFileMemoryVectorStore()
+            services => services.AddFileVectorStore()
         ];
 
         public override Func<IServiceCollection, IServiceCollection>[] DependencyInjectionCollectionRegistrationDelegates =>
         [
             // The FileMemory DI methods register a new vector store instance, which doesn't share the collection seeded by the
             // fixture and the test fails.
-            // services => services.AddFileMemoryVectorStoreRecordCollection<int, RecordWithAttributes>(this.CollectionName)
+            services => services.AddFileVectorStoreRecordCollection<int, RecordWithAttributes>(this.CollectionName)
         ];
     }
 }

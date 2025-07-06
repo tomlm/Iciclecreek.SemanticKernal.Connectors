@@ -1,6 +1,7 @@
 using Microsoft.Extensions.VectorData;
 using Microsoft.SemanticKernel.Connectors.InMemory;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,12 +22,12 @@ namespace Iciclecreek.SemanticKernel.Connectors.Files
         private readonly string _keyPropertyName;
         private readonly Task _loadingTask;
 
-        public FileDynamicCollection(string collectionPath, InMemoryDynamicCollection inMemoryCollection, VectorStoreCollectionDefinition definition)
+        public FileDynamicCollection(FileVectorStoreOptions options, string collectionName, InMemoryDynamicCollection inMemoryCollection, VectorStoreCollectionDefinition definition)
         {
-            _collectionPath = collectionPath;
+            _collectionPath = Path.Combine(options.Path, collectionName);
             _inMemoryCollection = inMemoryCollection;
-            _name = Path.GetFileName(collectionPath);
-            _metaFilePath = Path.Combine(_collectionPath, "collection.json");
+            _name = collectionName;
+            _metaFilePath = Path.Combine(options.Path, $"{collectionName}.json");
             Directory.CreateDirectory(_collectionPath);
             _definition = definition;
             _keyPropertyName = definition?.Properties?.FirstOrDefault(p => p is VectorStoreKeyProperty)?.Name
@@ -49,47 +50,53 @@ namespace Iciclecreek.SemanticKernel.Connectors.Files
                 File.WriteAllText(_metaFilePath, JsonSerializer.Serialize(meta));
             }
 
+            Directory.CreateDirectory(_collectionPath);
+            // Load all records from file system into memory
+            var files = Directory.EnumerateFiles(_collectionPath, "*.json").ToList();
+
             _loadingTask = Task.Run(async () =>
             {
-
-                // Load all records from disk into memory
-                foreach (var file in Directory.EnumerateFiles(_collectionPath, "*.json").ToList())
-                {
-                    if (Path.GetFileName(file) == "collection.json") continue;
-                    try
-                    {
-                        var json = await File.ReadAllTextAsync(file);
-                        var record = JsonSerializer.Deserialize<Dictionary<string, object?>>(json);
-                        if (record != null && record.ContainsKey(_keyPropertyName))
-                        {
-                            await _inMemoryCollection.UpsertAsync(record);
-                        }
-                    }
-                    catch (Exception err)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Error loading record from file {file}: {err.Message}");
-                    }
-                }
+                await _inMemoryCollection.EnsureCollectionExistsAsync();
+                await _inMemoryCollection.UpsertAsync(files.Select(file => JsonSerializer.Deserialize<Dictionary<string, object?>>(File.ReadAllText(file))));
             });
         }
 
         public override string Name => _name;
 
-        public override Task EnsureCollectionExistsAsync(CancellationToken cancellationToken = default)
+        public override async Task EnsureCollectionExistsAsync(CancellationToken cancellationToken = default)
         {
-            Directory.CreateDirectory(_collectionPath);
-            return _inMemoryCollection.EnsureCollectionExistsAsync(cancellationToken);
+            await _loadingTask;
+
+            if (!File.Exists(_metaFilePath))
+            {
+                // Write meta file
+                var meta = new CollectionMeta { KeyProperty = _keyPropertyName };
+                File.WriteAllText(_metaFilePath, JsonSerializer.Serialize(meta));
+            }
+
+            if (!Directory.Exists(_collectionPath))
+            {
+                Directory.CreateDirectory(_collectionPath);
+            }
+
+            await _inMemoryCollection.EnsureCollectionExistsAsync(cancellationToken);
         }
 
-        public override Task EnsureCollectionDeletedAsync(CancellationToken cancellationToken = default)
+        public override async Task EnsureCollectionDeletedAsync(CancellationToken cancellationToken = default)
         {
-            if (Directory.Exists(_collectionPath))
-                Directory.Delete(_collectionPath, true);
-            return _inMemoryCollection.EnsureCollectionDeletedAsync(cancellationToken);
+            await _loadingTask;
+
+            Directory.Delete(_collectionPath, true);
+
+            File.Delete(_metaFilePath);
+
+            await _inMemoryCollection.EnsureCollectionDeletedAsync(cancellationToken);
         }
 
         public override Task<bool> CollectionExistsAsync(CancellationToken cancellationToken = default)
-            => Task.FromResult(Directory.Exists(_collectionPath));
+        {
+            return Task.FromResult(File.Exists(_metaFilePath));
+        }
 
         public override async Task UpsertAsync(Dictionary<string, object?> record, CancellationToken cancellationToken = default)
         {

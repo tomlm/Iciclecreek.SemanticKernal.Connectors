@@ -39,26 +39,26 @@ namespace Iciclecreek.SemanticKernel.Connectors.Files
             {
                 Directory.Delete(path, recursive: true);
             }
+            path = $"{path}.json";
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
             await _inMemoryStore.EnsureCollectionDeletedAsync(name, cancellationToken);
         }
 
         public override VectorStoreCollection<TKey, TRecord> GetCollection<TKey, TRecord>(string collectionName, VectorStoreCollectionDefinition? definition = null)
         {
-            // Always create the directory and wrap the in-memory collection
-            string path = Path.Combine(_options.Path, collectionName);
-            Directory.CreateDirectory(path);
             var inMemoryCollection = (InMemoryCollection<TKey, TRecord>)_inMemoryStore.GetCollection<TKey, TRecord>(collectionName, definition);
             var collection = new FileCollection<TKey, TRecord>(_options, collectionName, inMemoryCollection, definition);
-            
+
             return collection;
         }
 
         public override VectorStoreCollection<object, Dictionary<string, object?>> GetDynamicCollection(string name, VectorStoreCollectionDefinition definition)
         {
-            string path = Path.Combine(_options.Path, name);
-            Directory.CreateDirectory(path);
             var inMemoryCollection = (InMemoryDynamicCollection)_inMemoryStore.GetDynamicCollection(name, definition);
-            return new FileDynamicCollection(path, inMemoryCollection, definition);
+            return new FileDynamicCollection(_options, name, inMemoryCollection, definition);
         }
 
         public override object? GetService(Type serviceType, object? serviceKey = null)

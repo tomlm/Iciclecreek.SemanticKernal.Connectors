@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.6" />
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.59.0" />
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.extensibility.core" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.1">
@@ -22,8 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\semantic-kernel\dotnet\test\VectorData\VectorData.ConformanceTests\VectorData.ConformanceTests.csproj" />
-    <ProjectReference Include="..\Iciclecreek.SemanticKernel.Connectors.Files\Iciclecreek.SemanticKernel.Connectors.Files.csproj" />
+    <ProjectReference Include="..\..\Iciclecreek.SemanticKernel.Connectors.Files\Iciclecreek.SemanticKernel.Connectors.Files.csproj" />
+    <ProjectReference Include="..\VectorData.ConformanceTests\VectorData.ConformanceTests.csproj" />
   </ItemGroup>
 
 </Project>
