@@ -1,5 +1,5 @@
 ﻿# Iciclecreek.SemanticKernel.Connectors.Files
-This library defines a file basd Vector Store provider for Microsoft.Extensions.VectorData
+This library defines a file based Vector Store provider for Microsoft.Extensions.VectorData
 
 ## Details
 This library defines FileVectoreStore which is a Vector Store provider that uses files to store the vectors and metadata. It is designed to work with Microsoft.Extensions.VectorData.
