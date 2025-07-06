@@ -62,13 +62,12 @@ namespace Iciclecreek.SemanticKernel.Connectors.FileMemory
                 File.WriteAllText(_metaFilePath, JsonSerializer.Serialize(meta));
             }
 
-            var files = Directory.EnumerateFiles(_collectionPath, "*.json").ToList();
             _loadingTask = Task.Run(async () =>
             {
                 await _inMemoryCollection.EnsureCollectionExistsAsync();
 
                 // Load all records from file system into memory
-                foreach (var file in files)
+                foreach (var file in Directory.EnumerateFiles(_collectionPath, "*.json"))
                 {
                     if (Path.GetFileName(file) == "collection.json") continue;
                     try
@@ -82,10 +81,10 @@ namespace Iciclecreek.SemanticKernel.Connectors.FileMemory
                             await _inMemoryCollection.UpsertAsync(record);
                         }
                     }
-                    catch (Exception err)
+                    catch (FileNotFoundException err)
                     {
                         // Log or handle the error as needed
-                        Console.WriteLine($"Error loading record from file {file}: {err.Message}");
+                        System.Diagnostics.Debug.WriteLine($"Error loading record from file {file}: {err.Message}");
                     }
                 }
             });
@@ -125,6 +124,9 @@ namespace Iciclecreek.SemanticKernel.Connectors.FileMemory
 
         public override async Task UpsertAsync(IEnumerable<TRecord> records, CancellationToken cancellationToken = default)
         {
+            if (records == null)
+                throw new ArgumentNullException(nameof(records));
+            
             foreach (var record in records)
                 await UpsertAsync(record, cancellationToken);
         }

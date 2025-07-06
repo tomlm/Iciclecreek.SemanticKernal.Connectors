@@ -40,7 +40,7 @@ public class FileMemoryEmbeddingGenerationTests(FileMemoryEmbeddingGenerationTes
         [
             // The FileMemory DI methods register a new vector store instance, which doesn't share the collection seeded by the
             // fixture and the test fails.
-            // services => services.AddFileMemoryVectorStore()
+            //services => services.AddFileMemoryVectorStore()
         ];
 
         public override Func<IServiceCollection, IServiceCollection>[] DependencyInjectionCollectionRegistrationDelegates =>
