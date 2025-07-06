@@ -1,6 +1,6 @@
 using Microsoft.Extensions.AI;
 
-namespace Iciclecreek.SemanticKernel.Connectors.FileMemory.Tests;
+namespace Iciclecreek.SemanticKernel.Connectors.Files.Tests;
 
 public class MockEmbeddingGenerator : IEmbeddingGenerator
 {

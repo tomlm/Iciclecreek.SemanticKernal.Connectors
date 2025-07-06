@@ -1,7 +1,7 @@
 using Microsoft.Extensions.VectorData;
 using System.Runtime.CompilerServices;
 
-namespace Iciclecreek.SemanticKernel.Connectors.FileMemory.Tests;
+namespace Iciclecreek.SemanticKernel.Connectors.Files.Tests;
 
 /// <summary>
 /// Contains tests for the <see cref="FileVectorStore"/> class.

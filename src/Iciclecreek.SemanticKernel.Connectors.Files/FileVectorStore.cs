@@ -7,7 +7,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Iciclecreek.SemanticKernel.Connectors.FileMemory
+namespace Iciclecreek.SemanticKernel.Connectors.Files
 {
     /// <summary>
     /// This is a vector store which stores each collection in a separate folder and each record in a file, wrapping InMemoryVectorStore.

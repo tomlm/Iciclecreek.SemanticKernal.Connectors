@@ -10,7 +10,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Iciclecreek.SemanticKernel.Connectors.FileMemory
+namespace Iciclecreek.SemanticKernel.Connectors.Files
 {
     public class FileCollection<TKey, TRecord> : VectorStoreCollection<TKey, TRecord> where TKey : notnull where TRecord : class
     {

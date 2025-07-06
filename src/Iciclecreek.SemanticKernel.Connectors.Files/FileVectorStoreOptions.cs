@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.AI;
 
-namespace Iciclecreek.SemanticKernel.Connectors.FileMemory
+namespace Iciclecreek.SemanticKernel.Connectors.Files
 {
     public sealed class FileVectorStoreOptions
     {

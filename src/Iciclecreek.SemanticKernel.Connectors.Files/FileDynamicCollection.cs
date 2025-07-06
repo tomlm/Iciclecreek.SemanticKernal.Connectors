@@ -9,7 +9,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Iciclecreek.SemanticKernel.Connectors.FileMemory
+namespace Iciclecreek.SemanticKernel.Connectors.Files
 {
     public class FileDynamicCollection : VectorStoreCollection<object, Dictionary<string, object?>>
     {
