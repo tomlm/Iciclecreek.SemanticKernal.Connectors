@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.VectorData;
 using Microsoft.SemanticKernel.Connectors.InMemory;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -8,9 +9,8 @@ using System.Threading.Tasks;
 
 namespace Iciclecreek.SemanticKernel.Connectors.FileMemory
 {
-
     /// <summary>
-    /// This is a vector store which stores each collection in a seperate folder and each record in a file 
+    /// This is a vector store which stores each collection in a separate folder and each record in a file, wrapping InMemoryVectorStore.
     /// </summary>
     public class FileVectorStore : VectorStore
     {
@@ -23,10 +23,13 @@ namespace Iciclecreek.SemanticKernel.Connectors.FileMemory
             Directory.CreateDirectory(_options.Path);
         }
 
-        public override Task<bool> CollectionExistsAsync(string name, CancellationToken cancellationToken = default)
+        public override async Task<bool> CollectionExistsAsync(string name, CancellationToken cancellationToken = default)
         {
+            // Check both file system and in-memory
             string path = Path.Combine(_options.Path, name);
-            return Task.FromResult(Directory.Exists(path));
+            bool existsOnDisk = Directory.Exists(path);
+            bool existsInMemory = await _inMemoryStore.CollectionExistsAsync(name, cancellationToken);
+            return existsOnDisk || existsInMemory;
         }
 
         public override async Task EnsureCollectionDeletedAsync(string name, CancellationToken cancellationToken = default)
@@ -41,27 +44,31 @@ namespace Iciclecreek.SemanticKernel.Connectors.FileMemory
 
         public override VectorStoreCollection<TKey, TRecord> GetCollection<TKey, TRecord>(string collectionName, VectorStoreCollectionDefinition? definition = null)
         {
+            // Always create the directory and wrap the in-memory collection
             string path = Path.Combine(_options.Path, collectionName);
             Directory.CreateDirectory(path);
-
-            _inMemoryStore.GetCollection<TKey, TRecord>(collectionName, definition);
-            return new FileCollection<TKey, TRecord>(_options, collectionName);
+            var inMemoryCollection = (InMemoryCollection<TKey, TRecord>)_inMemoryStore.GetCollection<TKey, TRecord>(collectionName, definition);
+            var collection = new FileCollection<TKey, TRecord>(_options, collectionName, inMemoryCollection, definition);
+            
+            return collection;
         }
 
         public override VectorStoreCollection<object, Dictionary<string, object?>> GetDynamicCollection(string name, VectorStoreCollectionDefinition definition)
         {
             string path = Path.Combine(_options.Path, name);
             Directory.CreateDirectory(path);
-            return new FileDynamicCollection(path);
+            var inMemoryCollection = (InMemoryDynamicCollection)_inMemoryStore.GetDynamicCollection(name, definition);
+            return new FileDynamicCollection(path, inMemoryCollection, definition);
         }
 
         public override object? GetService(Type serviceType, object? serviceKey = null)
         {
-            return null;
+            return _inMemoryStore.GetService(serviceType, serviceKey);
         }
 
         public override async IAsyncEnumerable<string> ListCollectionNamesAsync(CancellationToken cancellationToken = default)
         {
+            // List from disk
             foreach (var dir in Directory.EnumerateDirectories(_options.Path))
             {
                 yield return Path.GetFileName(dir);
