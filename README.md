@@ -1,4 +1,4 @@
-﻿# Iciclecreek.SemanticKernal.Connectors.Files
+﻿# Iciclecreek.SemanticKernel.Connectors.Files
 This library defines a file basd Vector Store provider for Microsoft.Extensions.VectorData
 
 ## Details
