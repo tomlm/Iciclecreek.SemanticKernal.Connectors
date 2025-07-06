@@ -64,12 +64,6 @@ var collection = vectorStore.GetCollection<ulong, Hotel>("skhotels");
 ### 4. Create Collection and Add Records
 
 ```csharp
-// Placeholder embedding generation method
-async Task<ReadOnlyMemory<float>> GenerateEmbeddingAsync(string text)
-{
-    // your logic here
-}
-
 // Ensure collection exists
 await collection.EnsureCollectionExistsAsync();
 
@@ -82,7 +76,6 @@ await collection.UpsertAsync(new Hotel
     HotelId = hotelId,
     HotelName = "Hotel Happy",
     Description = description,
-    DescriptionEmbedding = await GenerateEmbeddingAsync(description),
     Tags = new[] { "luxury", "pool" }
 });
 
@@ -95,11 +88,8 @@ Hotel? retrieved = await collection.GetAsync(hotelId);
 ### 5. Perform a Vector Search
 
 ```csharp
-ReadOnlyMemory<float> searchVector = await GenerateEmbeddingAsync(
-    "I'm looking for a hotel where customer happiness is the priority."
-);
 
-await foreach (var result in collection.SearchAsync(searchVector, top: 1))
+await foreach (var result in collection.SearchAsync("I'm looking for a hotel where customer happiness is the priority."))
 {
     Console.WriteLine($"Found hotel: {result.Record.Description}");
     Console.WriteLine($"Score: {result.Score}");
