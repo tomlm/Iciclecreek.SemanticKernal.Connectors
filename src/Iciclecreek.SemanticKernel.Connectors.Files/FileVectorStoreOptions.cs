@@ -4,6 +4,15 @@ namespace Iciclecreek.SemanticKernel.Connectors.Files
 {
     public sealed class FileVectorStoreOptions
     {
+        public FileVectorStoreOptions()
+        {
+        }
+
+        public FileVectorStoreOptions(IEmbeddingGenerator embeddingGenerator)
+        {
+            this.EmbeddingGenerator = embeddingGenerator;
+        }
+
         public string Path { get; set; } = "./vector_collections";
 
         //

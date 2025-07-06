@@ -1,6 +1,5 @@
 using Microsoft.Extensions.VectorData;
 using System.Runtime.CompilerServices;
-
 namespace Iciclecreek.SemanticKernel.Connectors.Files.Tests;
 
 /// <summary>

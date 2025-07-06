@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\semantic-kernel\dotnet\test\VectorData\VectorData.ConformanceTests\VectorData.ConformanceTests.csproj" />
-    <ProjectReference Include="..\Iciclecreek.SemanticKernel.Connectors.FileMemory\Iciclecreek.SemanticKernel.Connectors.FileMemory.csproj" />
+    <ProjectReference Include="..\Iciclecreek.SemanticKernel.Connectors.Files\Iciclecreek.SemanticKernel.Connectors.Files.csproj" />
   </ItemGroup>
 
 </Project>
