@@ -3,7 +3,7 @@ This library defines a file based Vector Store provider for Microsoft.Extensions
 
 ## Details
 This library defines FileVectoreStore which is a Vector Store provider that uses files to store the vectors and metadata. It is designed to work with Microsoft.Extensions.VectorData.
-
+FileVectorStore is a wrapper around InMemoryVectorStore, but with file persistance. It is useful for unit tests and local development, but probably not appropriate for large production work loads.
 
 ## 🚀 Getting Started with FileVectorStore
 
